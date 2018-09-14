@@ -1,3 +1,4 @@
+import os
 import random
 import enum
 import functools
@@ -82,21 +83,6 @@ class Player:
 
 
 
-def applyScore(player, scoreEnum, dice):
-    if scoreEnum.value in range(0,6):
-        player.setScore(scoreEnum, sum(map(lambda x : x if x == (scoreEnum.value + 1) else 0, dice.view())))
-    elif scoreEnum.name == 'FULL_H':
-        player.setScore(scoreEnum, 25)
-    elif scoreEnum.name == 'SM_STRT':
-        player.setScore(scoreEnum, 30)
-    elif scoreEnum.name == 'LG_STRT':
-        player.setScore(scoreEnum, 40)
-    elif scoreEnum.name == 'YAHTZEE':
-        player.setScore(scoreEnum, 50)
-    else:
-        player.setScore(scoreEnum, sum(dice.view()))
-
-
 def validateScore(scoreEnum, dice):
     diceFreq = dice.freq()
     flatten = list(map(lambda i: 1 if i > 0 else 0, diceFreq))
@@ -124,7 +110,31 @@ def validateScore(scoreEnum, dice):
             
 
 
-def turn(player, turnNumber, dice):
+def applyScore(player, scoreEnum, dice):
+    if not validateScore(scoreEnum, dice):
+        player.setScore(scoreEnum, 0)
+    else:
+        if scoreEnum.value in range(0,6):
+            player.setScore(scoreEnum, sum(map(lambda x : x if x == (scoreEnum.value + 1) else 0, dice.view())))
+        elif scoreEnum.name == 'FULL_H':
+            player.setScore(scoreEnum, 25)
+        elif scoreEnum.name == 'SM_STRT':
+            player.setScore(scoreEnum, 30)
+        elif scoreEnum.name == 'LG_STRT':
+            player.setScore(scoreEnum, 40)
+        elif scoreEnum.name == 'YAHTZEE':
+            player.setScore(scoreEnum, 50)
+        else:
+            player.setScore(scoreEnum, sum(dice.view()))
+
+
+def turn(player, rnd, turnNumber, dice):
+    clearScreen()
+    print()
+    print(f'Round {rnd}. Player {player.name()}\'s turn:')
+    print()
+    printScorecard([player])
+
     print(f'{turnNumber} Roll: {dice.view()}')
     if turnNumber != 'Third':
         print("Roll Again? (y/n)")
@@ -144,14 +154,19 @@ def turn(player, turnNumber, dice):
         print("Enter a different integer to indicate a score which you have NOT already entered.")
         scoreKey = int(input("--> "))
     scoreEnum = ScoreEnum(scoreKey)
-    if validateScore(scoreEnum, dice):
-        applyScore(player, scoreEnum, dice)
-    else:
-        player.setScore(scoreEnum, 0)
+    applyScore(player, scoreEnum, dice)
+
+    clearScreen();
+    print(f'\nRound {rnd}. Player {player.name()} results:\n')
+    printScorecard([player])
+    input("Press any key to continue...")
+
     return False
 
 
 def printScorecard(players):
+    print()
+    print("*" * 70)
     print('                    ', end='')
     playerNames = list(map(lambda p: p.name(), players))
     for name in playerNames:
@@ -167,5 +182,29 @@ def printScorecard(players):
     for player in players:
         print(f'{player.total():<13}', end='')
     print()
+    print("*" * 70)
+    print()
 
 
+def getWinners(players):
+    winners = [players[0]]
+    for player in players[1:]:
+        if player.total() > winners[0].total():
+            winners = [player]
+        elif player.total() == winner.total():
+            winners.append(player)
+    return winners
+
+def printWinners(winners):
+    if len(winners) > 1:
+        print("It's a tie! Out winners are:")
+        for winner in winners:
+            print(f'  - {winner.name()}')
+    else:
+        print(f'Our winner is... {winners[0].name()}!')
+
+def clearScreen():
+    os.system('clear') if os.name == 'posix' else os.system('cls')
+
+def pressKeyToContinue():
+    input("Press any key to continue...")
