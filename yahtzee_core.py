@@ -69,6 +69,7 @@ class Player:
         self._name = name
         self._scores = [-1 for x in range(0,13)]
         self._type = playerType
+        self._remainingPlays = [x for x in range(0,13)]
 
     def total(self):
         s = list(map(lambda x: 0 if x < 0 else x, self._scores))
@@ -86,6 +87,11 @@ class Player:
     def type(self):
         return self._type
 
+    def removeFromRemaining(self, i):
+        self._remainingPlays.remove(i)
+
+    def remainingPlays(self):
+        return self._remainingPlays
 
 
 def validateScore(scoreEnum, dice):
@@ -131,6 +137,7 @@ def applyScore(player, scoreEnum, dice):
             player.setScore(scoreEnum, 50)
         else:
             player.setScore(scoreEnum, sum(dice.view()))
+    player.removeFromRemaining(scoreEnum.value)
 
 
 def interactiveTurn(player, rnd, turnNumber, dice):
