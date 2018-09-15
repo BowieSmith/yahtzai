@@ -2,7 +2,7 @@ import os
 import random
 import enum
 import functools
-import yahtzee_dumb_ai
+import yahtzai_dumb_ai
 
 
 class Die:
@@ -220,7 +220,7 @@ def turn(player, rnd, turnNumber, dice):
     if player.type() == 'human':
         return interactiveTurn(player, rnd, turnNumber, dice)
     elif player.type() == 'ai-dumb':
-        return aiTurn(player, rnd, turnNumber, dice, yahtzee_dumb_ai.dumb_ai_engine)
+        return aiTurn(player, rnd, turnNumber, dice, yahtzai_dumb_ai.ai_engine)
 
 
 def printScorecard(players):

@@ -1,6 +1,6 @@
-import yahtzee_core
+import yahtzai_core
 
-yahtzee_core.clearScreen()
+yahtzai_core.clearScreen()
 
 print('''
   ___    ___ ________  ___  ___  _________  ________  ________  ___     
@@ -14,9 +14,9 @@ print('''
 ''')
 
 print("\n" * 20)
-yahtzee_core.pressEnterToContinue()
+yahtzai_core.pressEnterToContinue()
                                                                         
-yahtzee_core.clearScreen()
+yahtzai_core.clearScreen()
 print("How many human players?");
 humanPlayersCount = int(input("--> "));
 print()
@@ -30,20 +30,20 @@ players = []
 for p in range(0, humanPlayersCount):
     print(f'Player {p + 1} name:')
     name = input("--> ")
-    players.append(yahtzee_core.Player(name, 'human'))
+    players.append(yahtzai_core.Player(name, 'human'))
     print()
 
 # The second argument to Player constructor determines which AI Engine to use
 for p in range(1, aiPlayersCount + 1):
-    players.append(yahtzee_core.Player(f'AI Player {p}', 'ai-dumb'))
+    players.append(yahtzai_core.Player(f'AI Player {p}', 'ai-dumb'))
 
 print("\nAll set! Our players are:")
 for p in players:
     print("  -",p.name())
 print()
-yahtzee_core.pressEnterToContinue()
+yahtzai_core.pressEnterToContinue()
 
-dice = yahtzee_core.Dice()
+dice = yahtzai_core.Dice()
 
 # Main game loop
 # 13 rounds. Each play gets up to three rolls each round.
@@ -51,15 +51,15 @@ for rnd in range(0,13):
     for player in players:
         dice.roll()
         for turnNo in range(0,3):
-            rollAgain = yahtzee_core.turn(player, rnd, turnNo, dice)
+            rollAgain = yahtzai_core.turn(player, rnd, turnNo, dice)
             if not rollAgain:
                 break
 
-    yahtzee_core.clearScreen()
+    yahtzai_core.clearScreen()
     print(f'\nRound {rnd} scores:\n')
-    yahtzee_core.printScorecard(players)
+    yahtzai_core.printScorecard(players)
 
     # toggle this switch and set 0 humans to n AI for automatic play
-    yahtzee_core.pressEnterToContinue()
+    yahtzai_core.pressEnterToContinue()
     
-yahtzee_core.printWinners(players)
+yahtzai_core.printWinners(players)
