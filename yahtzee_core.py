@@ -2,6 +2,7 @@ import os
 import random
 import enum
 import functools
+import yahtzee_dumb_ai
 
 
 class Die:
@@ -36,7 +37,7 @@ class Dice:
         if not diceNums:
             diceNums = list(range(0,5))
         for i in diceNums:
-            self._dice[i].roll()
+            self._dice[i - 1].roll()
 
 
 class ScoreEnum(enum.Enum):
@@ -64,9 +65,10 @@ class Player:
     Score order: [1s, 2s, 3s, 4s, 5s, 6s, 3k, 4k, fh, ss, ls, y, ch]
     """
 
-    def __init__(self, name):
+    def __init__(self, name, playerType):
         self._name = name
         self._scores = [-1 for x in range(0,13)]
+        self._type = playerType
 
     def total(self):
         s = list(map(lambda x: 0 if x < 0 else x, self._scores))
@@ -80,6 +82,9 @@ class Player:
 
     def setScore(self, ScoreEnum, val):
         self._scores[ScoreEnum.value] = val
+
+    def type(self):
+        return self._type
 
 
 
@@ -128,22 +133,22 @@ def applyScore(player, scoreEnum, dice):
             player.setScore(scoreEnum, sum(dice.view()))
 
 
-def turn(player, rnd, turnNumber, dice):
+def interactiveTurn(player, rnd, turnNumber, dice):
+    turnNumberString = "First" if turnNumber == 0 else "Second" if turnNumber == 1 else "Third"
     clearScreen()
-    print()
-    print(f'Round {rnd}. Player {player.name()}\'s turn:')
-    print()
+    print(f'\nRound {rnd + 1} -- {player.name()}\'s turn:\n')
     printScorecard([player])
+    print(f'{turnNumberString} Roll: {dice.view()}')
 
-    print(f'{turnNumber} Roll: {dice.view()}')
-    if turnNumber != 'Third':
+    if turnNumber != 2:
         print("Roll Again? (y/n)")
         again = input("--> ").lower()
         if again == 'y':
             print("Enter dice to reroll in a space delimited list (Ex. '1 4 5'):")
             rerollVals = list(map(lambda s : int(s), input("--> ").split()))
-            dice.roll(*(list(map(lambda i: i - 1, rerollVals))))
+            dice.roll(*rerollVals)
             return True
+
     print("What score do you want to apply your dice to?")
     print("Indicate which score using the integer key provided on the scorecard")
     print("If the dice are not valid for the requested score, you will receive a 0 in that row.")
@@ -156,12 +161,30 @@ def turn(player, rnd, turnNumber, dice):
     scoreEnum = ScoreEnum(scoreKey)
     applyScore(player, scoreEnum, dice)
 
-    clearScreen();
+    clearScreen()
     print(f'\nRound {rnd}. Player {player.name()} results:\n')
     printScorecard([player])
-    input("Press any key to continue...")
+    pressEnterToContinue()
 
     return False
+
+
+def aiTurn(player, rnd, turnNumber, dice, aiEngine):
+    aiChoice = aiEngine(player, rnd, turnNumber, dice)
+    if aiChoice[0] == 'n':
+        applyScore(player, aiChoice[1], dice)
+        return False
+    else:
+        dice.roll(*aiChoice[1])
+        return True
+        
+
+
+def turn(player, rnd, turnNumber, dice):
+    if player.type() == 'human':
+        return interactiveTurn(player, rnd, turnNumber, dice)
+    elif player.type() == 'ai-dumb':
+        return aiTurn(player, rnd, turnNumber, dice, yahtzee_dumb_ai.dumb_ai_engine)
 
 
 def printScorecard(players):
@@ -191,20 +214,25 @@ def getWinners(players):
     for player in players[1:]:
         if player.total() > winners[0].total():
             winners = [player]
-        elif player.total() == winner.total():
+        elif player.total() == winners[0].total():
             winners.append(player)
     return winners
 
-def printWinners(winners):
+def printWinners(players):
+    winners = getWinners(players)
+    clearScreen()
+    printScorecard(players)
+    print()
     if len(winners) > 1:
         print("It's a tie! Out winners are:")
         for winner in winners:
             print(f'  - {winner.name()}')
     else:
         print(f'Our winner is... {winners[0].name()}!')
+    print("\nGoodbye!\n")
 
 def clearScreen():
     os.system('clear') if os.name == 'posix' else os.system('cls')
 
-def pressKeyToContinue():
-    input("Press any key to continue...")
+def pressEnterToContinue():
+    input("Press enter to continue...")
