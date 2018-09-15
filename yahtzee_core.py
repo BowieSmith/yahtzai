@@ -24,16 +24,20 @@ class Dice:
     def __init__(self):
         self._dice = (Die(), Die(), Die(), Die(), Die())
 
+    
     def view(self):
+        """Returns state of 5 die as 5-tuple of ints"""
         return tuple(map(lambda d: d.val(), self._dice))
 
     def freq(self):
+        """Returns 6-tuple with frequency of each dice from current state"""
         diceFreq = [0 for x in range(0,6)]
         for i in self.view():
             diceFreq[i - 1] += 1
         return tuple(diceFreq)
 
     def roll(self, *diceNums):
+        """With no args, reroll all. Else roll dice nums given in int list"""
         if not diceNums:
             diceNums = list(range(0,5))
         for i in diceNums:
@@ -63,6 +67,7 @@ class Player:
     Holds player name and list of scores
     All 13 scores initialized with value -1 to indicate not yet used
     Score order: [1s, 2s, 3s, 4s, 5s, 6s, 3k, 4k, fh, ss, ls, y, ch]
+    Also holds set of "remaining plays".
     """
 
     def __init__(self, name, playerType):
@@ -72,7 +77,9 @@ class Player:
         self._remainingPlays = [x for x in range(0,13)]
 
     def total(self):
+        # Maps any -1 scores to 0 before totaling
         s = list(map(lambda x: 0 if x < 0 else x, self._scores))
+        # Returns sum of map. Includes 35 bonus calculation if upper section >= 63
         return (sum(s) if sum(s[0:6]) < 63 else sum(s) + 35)
 
     def scores(self):
@@ -95,7 +102,15 @@ class Player:
 
 
 def validateScore(scoreEnum, dice):
+    """
+    Given a scoreEnum and 5 dice, validates whether dice meet scoring condition.
+    If dice meet condition, return True. Else return False.
+    For scoreEnums with no condition (Ex. CHANCE) True is returned.
+    """
+    
     diceFreq = dice.freq()
+    # Flatten takes frequency map and reduces all occurences to 1
+    # Useful for checking if value simply exists in dice set
     flatten = list(map(lambda i: 1 if i > 0 else 0, diceFreq))
 
     if scoreEnum.name == 'THREE_OF_K':
@@ -122,6 +137,10 @@ def validateScore(scoreEnum, dice):
 
 
 def applyScore(player, scoreEnum, dice):
+    """
+    Given player, scoreEnum, and dice, assigns score to player
+    """
+
     if not validateScore(scoreEnum, dice):
         player.setScore(scoreEnum, 0)
     else:
@@ -177,6 +196,10 @@ def interactiveTurn(player, rnd, turnNumber, dice):
 
 
 def aiTurn(player, rnd, turnNumber, dice, aiEngine):
+    """
+    Calls aiEngine and calculates next move.
+    aiEngine returns a 2-tuple. Either: ('n', scoreEnum) or ('y', [dice num list])
+    """
     aiChoice = aiEngine(player, rnd, turnNumber, dice)
     if aiChoice[0] == 'n':
         applyScore(player, aiChoice[1], dice)
@@ -188,6 +211,12 @@ def aiTurn(player, rnd, turnNumber, dice, aiEngine):
 
 
 def turn(player, rnd, turnNumber, dice):
+    """
+    Delegates logic of each turn to other functions based on player type
+    Humans given interactive path. AIs directed to AI automated path.
+    AI ENGINE IS PASSED TO aiTurn() AT THIS STEP!
+    """
+
     if player.type() == 'human':
         return interactiveTurn(player, rnd, turnNumber, dice)
     elif player.type() == 'ai-dumb':

@@ -33,6 +33,7 @@ for p in range(0, humanPlayersCount):
     players.append(yahtzee_core.Player(name, 'human'))
     print()
 
+# The second argument to Player constructor determines which AI Engine to use
 for p in range(1, aiPlayersCount + 1):
     players.append(yahtzee_core.Player(f'AI Player {p}', 'ai-dumb'))
 
@@ -44,6 +45,8 @@ yahtzee_core.pressEnterToContinue()
 
 dice = yahtzee_core.Dice()
 
+# Main game loop
+# 13 rounds. Each play gets up to three rolls each round.
 for rnd in range(0,13):
     for player in players:
         dice.roll()
@@ -55,6 +58,8 @@ for rnd in range(0,13):
     yahtzee_core.clearScreen()
     print(f'\nRound {rnd} scores:\n')
     yahtzee_core.printScorecard(players)
+
+    # toggle this switch and set 0 humans to n AI for automatic play
     yahtzee_core.pressEnterToContinue()
     
 yahtzee_core.printWinners(players)
