@@ -17,12 +17,22 @@ print("\n" * 20)
 yahtzai_core.pressEnterToContinue()
                                                                         
 yahtzai_core.clearScreen()
-print("How many human players?");
-humanPlayersCount = int(input("--> "));
+while True:
+    try:
+        print("How many human players?");
+        humanPlayersCount = int(input("--> "));
+        break
+    except ValueError:
+        print("Enter an INTEGER!\n")
 print()
 
-print("How many AI nemeses?");
-aiPlayersCount = int(input("--> "));
+while True:
+    try:
+        print("How many AI nemeses?");
+        aiPlayersCount = int(input("--> "));
+        break
+    except ValueError:
+        print("Enter an INTEGER!\n")
 print()
 
 players = []

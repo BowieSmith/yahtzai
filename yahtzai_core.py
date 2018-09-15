@@ -166,26 +166,44 @@ def interactiveTurn(player, rnd, turnNumber, dice):
     printScorecard([player])
     print(f'{turnNumberString} Roll: {dice.view()}')
 
-    if turnNumber != 2:
-        print("Roll Again? (y/n)")
-        again = input("--> ").lower()
-        if again == 'y':
-            print("Enter dice to reroll in a space delimited list (Ex. '1 4 5'):")
-            rerollVals = list(map(lambda s : int(s), input("--> ").split()))
-            dice.roll(*rerollVals)
-            return True
+    if turnNumber < 2:
+        while True:
+            print("Roll Again? (y/n)")
+            again = input("--> ").lower()
+            if again == 'y':
+                while True:
+                    try:
+                        print("Enter dice to reroll in a space delimited list (Ex. '1 4 5'):")
+                        rerollVals = list(map(lambda s : int(s), input("--> ").split()))
+                        dice.roll(*rerollVals)
+                        return True
+                    except:
+                        print("\nONLY INTEGERS! 1 - 5. (Or press enter to reroll all dice)")
+            elif again == 'n':
+                print()
+                break
+            else:
+                print("Enter 'y' or 'n' !\n")
+
+
 
     print("What score do you want to apply your dice to?")
     print("Indicate which score using the integer key provided on the scorecard")
     print("If the dice are not valid for the requested score, you will receive a 0 in that row.")
     print("(Ex. '0' for ONES, '1' for TWOS, etc)")
-    scoreKey = int(input("--> "))
-    while player.scores()[scoreKey] != -1:
-        print("You already have a score for", ScoreEnum(scoreKey).name)
-        print("Enter a different integer to indicate a score which you have NOT already entered.")
-        scoreKey = int(input("--> "))
-    scoreEnum = ScoreEnum(scoreKey)
-    applyScore(player, scoreEnum, dice)
+    
+    while True:
+        try:
+            scoreKey = int(input("--> "))
+            while player.scores()[scoreKey] != -1:
+                print(f'\nYou already have a score for {ScoreEnum(scoreKey).name}!')
+                print("Enter a different integer to indicate a score which you have NOT already entered.")
+                scoreKey = int(input("--> "))
+            scoreEnum = ScoreEnum(scoreKey)
+            applyScore(player, scoreEnum, dice)
+            break
+        except:
+            print("\nEnter an INTEGER! 0 - 12.")
 
     clearScreen()
     print(f'\nRound {rnd}. Player {player.name()} results:\n')
