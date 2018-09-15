@@ -275,6 +275,7 @@ def getWinners(players):
 def printWinners(players):
     winners = getWinners(players)
     clearScreen()
+    print("\nFinal scores:\n")
     printScorecard(players)
     print()
     if len(winners) > 1:
@@ -282,7 +283,7 @@ def printWinners(players):
         for winner in winners:
             print(f'  - {winner.name()}')
     else:
-        print(f'Our winner is... {winners[0].name()}!')
+        print(f'Our winner is... {winners[0].name()}, with a score of {winners[0].total()}!')
     print("\nGoodbye!\n")
 
 def clearScreen():

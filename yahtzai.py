@@ -66,10 +66,10 @@ for rnd in range(0,13):
                 break
 
     yahtzai_core.clearScreen()
-    print(f'\nRound {rnd} scores:\n')
+    print(f'\nRound {rnd + 1} scores:\n')
     yahtzai_core.printScorecard(players)
 
-    # toggle this switch and set 0 humans to n AI for automatic play
+    # comment this out and set 0 humans to n AI for automatic play
     yahtzai_core.pressEnterToContinue()
     
 yahtzai_core.printWinners(players)
