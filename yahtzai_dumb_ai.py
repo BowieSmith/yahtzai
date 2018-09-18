@@ -5,4 +5,4 @@ def ai_engine(player, rnd, turnNumber, dice):
         (rollAgain, vals)           Ex. ('y', [1, 2, 5])
         (rollAgain, scoreEnum)      Ex. ('n', yahtzai_core.ScoreEnum.ONES)
     """
-    return ('n', yahtzai_core.ScoreEnum(player.remainingPlays()[0]))
+    return ('n', player.remainingPlays()[0])

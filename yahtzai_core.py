@@ -3,6 +3,7 @@ import random
 import enum
 import functools
 import yahtzai_dumb_ai
+import yahtzai_less_dumb_ai
 
 
 class Die:
@@ -35,6 +36,12 @@ class Dice:
         for i in self.view():
             diceFreq[i - 1] += 1
         return tuple(diceFreq)
+
+    def flatten(self):
+        """Maps frequency tuple to 1's for positive values, 0 stays 0
+           Useful for detecting straights"""
+        return tuple(map(lambda i: 1 if i > 0 else 0, self.freq()))
+
 
     def roll(self, *diceNums):
         """With no args, reroll all. Else roll dice nums given in int list"""
@@ -74,7 +81,7 @@ class Player:
         self._name = name
         self._scores = [-1 for x in range(0,13)]
         self._type = playerType
-        self._remainingPlays = [x for x in range(0,13)]
+        self._remainingPlays = [ScoreEnum(x) for x in range(0,13)]
 
     def total(self):
         # Maps any -1 scores to 0 before totaling
@@ -109,9 +116,7 @@ def validateScore(scoreEnum, dice):
     """
     
     diceFreq = dice.freq()
-    # Flatten takes frequency map and reduces all occurences to 1
-    # Useful for checking if value simply exists in dice set
-    flatten = list(map(lambda i: 1 if i > 0 else 0, diceFreq))
+    flatten = dice.flatten()
 
     if scoreEnum.name == 'THREE_OF_K':
         return (3 in diceFreq) or (4 in diceFreq) or (5 in diceFreq)
@@ -120,15 +125,15 @@ def validateScore(scoreEnum, dice):
     elif scoreEnum.name == 'FULL_H':
         return (3 in diceFreq) and (2 in diceFreq)
     elif scoreEnum.name == 'SM_STRT':
-        return (flatten == [1, 1, 1, 1, 1, 0] or
-                flatten == [0, 1, 1, 1, 1, 1] or
-                flatten == [1, 1, 1, 1, 0, 0] or
-                flatten == [1, 1, 1, 1, 0, 1] or
-                flatten == [0, 1, 1, 1, 1, 0] or
-                flatten == [0, 0, 1, 1, 1, 1] or
-                flatten == [1, 0, 1, 1, 1, 1])
+        return (flatten == (1, 1, 1, 1, 1, 0) or
+                flatten == (0, 1, 1, 1, 1, 1) or
+                flatten == (1, 1, 1, 1, 0, 0) or
+                flatten == (1, 1, 1, 1, 0, 1) or
+                flatten == (0, 1, 1, 1, 1, 0) or
+                flatten == (0, 0, 1, 1, 1, 1) or
+                flatten == (1, 0, 1, 1, 1, 1))
     elif scoreEnum.name == 'LG_STRT':
-        return (flatten == [1, 1, 1, 1, 1, 0] or flatten == [0, 1, 1, 1, 1, 1])
+        return (flatten == (1, 1, 1, 1, 1, 0) or flatten == (0, 1, 1, 1, 1, 1))
     elif scoreEnum.name == 'YAHTZEE':
         return (5 in diceFreq)
     else:
@@ -156,7 +161,7 @@ def applyScore(player, scoreEnum, dice):
             player.setScore(scoreEnum, 50)
         else:
             player.setScore(scoreEnum, sum(dice.view()))
-    player.removeFromRemaining(scoreEnum.value)
+    player.removeFromRemaining(scoreEnum)
 
 
 def interactiveTurn(player, rnd, turnNumber, dice):
@@ -237,8 +242,11 @@ def turn(player, rnd, turnNumber, dice):
 
     if player.type() == 'human':
         return interactiveTurn(player, rnd, turnNumber, dice)
-    elif player.type() == 'ai-dumb':
+    if player.type() == 'ai-dumb':
         return aiTurn(player, rnd, turnNumber, dice, yahtzai_dumb_ai.ai_engine)
+    if player.type() == 'ai-less-dumb':
+        return aiTurn(player, rnd, turnNumber, dice, yahtzai_less_dumb_ai.ai_engine)
+
 
 
 def printScorecard(players):

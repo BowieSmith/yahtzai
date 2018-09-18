@@ -45,7 +45,7 @@ for p in range(0, humanPlayersCount):
 
 # The second argument to Player constructor determines which AI Engine to use
 for p in range(1, aiPlayersCount + 1):
-    players.append(yahtzai_core.Player(f'AI Player {p}', 'ai-dumb'))
+    players.append(yahtzai_core.Player(f'AI Player {p}', 'ai-less-dumb'))
 
 print("\nAll set! Our players are:")
 for p in players:
