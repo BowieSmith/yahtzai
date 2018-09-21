@@ -2,8 +2,10 @@ import os
 import random
 import enum
 import functools
+import time
 import yahtzai_dumb_ai
 import yahtzai_less_dumb_ai
+import yahtzai_random_ai
 
 
 class Die:
@@ -51,6 +53,7 @@ class Dice:
             self._dice[i - 1].roll()
 
 
+
 class ScoreEnum(enum.Enum):
     """Enum for indexing into scorecard list of scores"""
 
@@ -82,6 +85,7 @@ class Player:
         self._scores = [-1 for x in range(0,13)]
         self._type = playerType
         self._remainingPlays = [ScoreEnum(x) for x in range(0,13)]
+        self._playerId = time.time()
 
     def total(self):
         # Maps any -1 scores to 0 before totaling
@@ -106,6 +110,9 @@ class Player:
 
     def remainingPlays(self):
         return self._remainingPlays
+
+    def playerId(self):
+        return self._playerId
 
 
 def validateScore(scoreEnum, dice):
@@ -246,6 +253,8 @@ def turn(player, rnd, turnNumber, dice):
         return aiTurn(player, rnd, turnNumber, dice, yahtzai_dumb_ai.ai_engine)
     if player.type() == 'ai-less-dumb':
         return aiTurn(player, rnd, turnNumber, dice, yahtzai_less_dumb_ai.ai_engine)
+    if player.type() == 'ai-random':
+        return aiTurn(player,rnd, turnNumber, dice, yahtzai_random_ai.ai_engine)
 
 
 
