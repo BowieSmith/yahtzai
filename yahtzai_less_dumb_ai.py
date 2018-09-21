@@ -18,6 +18,13 @@ def ai_engine(player, rnd, turnNumber, dice):
     if yc.validateScore(yc.ScoreEnum.FULL_H, dice) and (yc.ScoreEnum.FULL_H in remaining):
         return ('n', yc.ScoreEnum.FULL_H)
 
+    if yc.validateScore(yc.ScoreEnum.FOUR_OF_K, dice) and (yc.ScoreEnum.FOUR_OF_K in remaining):
+        return ('n', yc.ScoreEnum.FOUR_OF_K)
+
+    if yc.validateScore(yc.ScoreEnum.THREE_OF_K, dice) and (yc.ScoreEnum.THREE_OF_K in remaining):
+        return ('n', yc.ScoreEnum.THREE_OF_K)
+
+    # only reroll dice that don't match the highest freq occurence
     if turnNumber < 2:
         for x in range(5, 1, -1):
             if (x in diceFreq):
@@ -28,6 +35,7 @@ def ai_engine(player, rnd, turnNumber, dice):
                         diceToReroll.append(idx)
                 return ('y', diceToReroll)
 
+    # try to apply score against # with highest freq occurence
     for x in range(5, 1, -1):
         if (x in diceFreq):
             dieNum = diceFreq.index(x) + 1

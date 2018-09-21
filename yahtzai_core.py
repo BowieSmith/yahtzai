@@ -229,6 +229,10 @@ def aiTurn(player, rnd, turnNumber, dice, aiEngine):
     """
     Calls aiEngine and calculates next move.
     aiEngine returns a 2-tuple. Either: ('n', scoreEnum) or ('y', [dice num list])
+
+    Total possible actions: 32 - 44  (Depending on how many plays are left)
+    Possible rerolls = sum([nchoosek(5,k) for k in range(1,6)]) = 31
+    Possible plays   = len(player.remainingPlays())             = 1 - 13
     """
     aiChoice = aiEngine(player, rnd, turnNumber, dice)
     if aiChoice[0] == 'n':
