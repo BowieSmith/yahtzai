@@ -34,6 +34,10 @@ def ai_engine(player, rnd, turnNumber, dice):
                     if die != dieNum:
                         diceToReroll.append(idx)
                 return ('y', diceToReroll)
+        if ((sum(flatten) == 4) and (yc.ScoreEnum.LG_STRT in remaining)
+                             and (flatten[0] == 0 or flatten[5] == 0)):
+            return ('y', [diceState.index(diceFreq.index(2) + 1) + 1])
+
 
     # try to apply score against # with highest freq occurence
     for x in range(5, 1, -1):

@@ -22,7 +22,7 @@ class Die:
 
 
 class Dice:
-    """Holds mutable state of 6 6-sided die"""
+    """Holds mutable state of 5 6-sided die"""
 
     def __init__(self):
         self._dice = (Die(), Die(), Die(), Die(), Die())
@@ -46,7 +46,8 @@ class Dice:
 
 
     def roll(self, *diceNums):
-        """With no args, reroll all. Else roll dice nums given in int list"""
+        """With no args, reroll all. Else roll dice nums given in int list
+            diceNums is indexed starting at 1 (ex [1,3,5])"""
         if not diceNums:
             diceNums = list(range(0,5))
         for i in diceNums:
