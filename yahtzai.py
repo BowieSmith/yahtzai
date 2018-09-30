@@ -70,6 +70,6 @@ for rnd in range(0,13):
     yahtzai_core.printScorecard(players)
 
     # comment this out and set 0 humans to n AI for automatic play
-    yahtzai_core.pressEnterToContinue()
+#    yahtzai_core.pressEnterToContinue()
     
 yahtzai_core.printWinners(players)
