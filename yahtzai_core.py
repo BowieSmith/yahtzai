@@ -253,10 +253,10 @@ def turn(player, rnd, turnNumber, dice):
             printScorecard([player])
             pressEnterToContinue()
 
-        return False
+        return False #Indicating to NOT roll again
     else:
         dice.roll(*decision[1])
-        return True
+        return True  #Indicating to roll again
 
 
 

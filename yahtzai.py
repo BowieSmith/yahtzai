@@ -47,14 +47,16 @@ for p in range(0, humanPlayersCount):
 for p in range(1, aiPlayersCount + 1):
     players.append(yahtzai_core.Player(f'AI Player {p}', 'ai-less-dumb'))
 
-
-while True:
-    print("Automate gameplay? (y/n)");
-    automatePlay = input("--> ").lower()
-    if (automatePlay != 'y' and automatePlay != 'n'):
-        print("Enter 'y' or 'n'!\n")
-    else:
-        break
+if humanPlayersCount != 0:
+    automatePlay = 'n'
+else:
+    while True:
+        print("Automate gameplay? (y/n)");
+        automatePlay = input("--> ").lower()
+        if (automatePlay != 'y' and automatePlay != 'n'):
+            print("Enter 'y' or 'n'!\n")
+        else:
+            break
 
 print("\nAll set! Our players are:")
 for p in players:
