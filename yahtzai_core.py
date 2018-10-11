@@ -188,8 +188,7 @@ def interactiveTurn(player, rnd, turnNumber, dice):
                     try:
                         print("Enter dice to reroll in a space delimited list (Ex. '1 4 5'):")
                         rerollVals = list(map(lambda s : int(s), input("--> ").split()))
-                        dice.roll(*rerollVals)
-                        return True
+                        return ('y', rerollVals)
                     except:
                         print("\nONLY INTEGERS! 1 - 5. (Or press enter to reroll all dice)")
             elif again == 'n':
@@ -212,54 +211,52 @@ def interactiveTurn(player, rnd, turnNumber, dice):
                 print(f'\nYou already have a score for {ScoreEnum(scoreKey).name}!')
                 print("Enter a different integer to indicate a score which you have NOT already entered.")
                 scoreKey = int(input("--> "))
-            scoreEnum = ScoreEnum(scoreKey)
-            applyScore(player, scoreEnum, dice)
-            break
+            return ('n', ScoreEnum(scoreKey))
         except:
             print("\nEnter an INTEGER! 0 - 12.")
 
-    clearScreen()
-    print(f'\nRound {rnd}. Player {player.name()} results:\n')
-    printScorecard([player])
-    pressEnterToContinue()
-
-    return False
-
-
-def aiTurn(player, rnd, turnNumber, dice, aiEngine):
-    """
-    Calls aiEngine and calculates next move.
-    aiEngine returns a 2-tuple. Either: ('n', scoreEnum) or ('y', [dice num list])
-
-    Total possible actions: 32 - 44  (Depending on how many plays are left)
-    Possible rerolls = sum([nchoosek(5,k) for k in range(1,6)]) = 31
-    Possible plays   = len(player.remainingPlays())             = 1 - 13
-    """
-    aiChoice = aiEngine(player, rnd, turnNumber, dice)
-    if aiChoice[0] == 'n':
-        applyScore(player, aiChoice[1], dice)
-        return False
-    else:
-        dice.roll(*aiChoice[1])
-        return True
-        
 
 
 def turn(player, rnd, turnNumber, dice):
     """
-    Delegates logic of each turn to other functions based on player type
+    Delegates logic of each turn to other functions based on player type.
     Humans given interactive path. AIs directed to AI automated path.
-    AI ENGINE IS PASSED TO aiTurn() AT THIS STEP!
+    BOTH INTERACTIVE AND AUTOMATED AI PATH RETURN SAME 'DECISION' INTERFACE.
+        Either: ('n', scoreEnum)      -- "No, don't roll again, apply this score"
+        or:     ('y', [dice num list] -- "Yes, roll again, with this list of dice"
     """
 
     if player.type() == 'human':
-        return interactiveTurn(player, rnd, turnNumber, dice)
-    if player.type() == 'ai-dumb':
-        return aiTurn(player, rnd, turnNumber, dice, yahtzai_dumb_ai.ai_engine)
-    if player.type() == 'ai-less-dumb':
-        return aiTurn(player, rnd, turnNumber, dice, yahtzai_less_dumb_ai.ai_engine)
-    if player.type() == 'ai-random':
-        return aiTurn(player,rnd, turnNumber, dice, yahtzai_random_ai.ai_engine)
+        decision = interactiveTurn(player, rnd, turnNumber, dice)
+    elif player.type() == 'ai-dumb':
+        decision = yahtzai_dumb_ai.ai_engine(player, rnd, turnNumber, dice)
+    elif player.type() == 'ai-less-dumb':
+        decision = yahtzai_less_dumb_ai.ai_engine(player, rnd, turnNumber, dice)
+    elif player.type() == 'ai-random':
+        decision = yahtzai_random_ai.ai_engine(player, rnd, turnNumber, dice)
+
+    # LOG GAME PLAY -- comma separated values for each turn, newline separating turns
+    # LOG SYNTAX:  playerName, type, id, scores, roundNumber, turnNumber, dice, decision, returnVal
+    # EXAMPLE:     player1, human, 2314123.12341, (-1, -1, 6, ...), 4, 2, (2, 2, 2, 3, 3), n, ScoreEnum.FULL_H
+    with open('gamelog', 'a+') as f:
+        f.write(f'{player.name()},{player.type()},{player.playerId()},')
+        f.write(f'{"(" + ",".join(str(i) for i in player.scores()) + ")"},')
+        f.write(f'{rnd},{turnNumber},{"(" + ",".join(str(i) for i in dice.view()) + ")"},')
+        f.write(f'{decision[0]},{decision[1]}\n')
+
+    if (decision[0] == 'n'):
+        applyScore(player, decision[1], dice)
+
+        if (player.type() == 'human'):
+            clearScreen()
+            print(f'\nRound {rnd}. Player {player.name()} results:\n')
+            printScorecard([player])
+            pressEnterToContinue()
+
+        return False
+    else:
+        dice.roll(*decision[1])
+        return True
 
 
 
