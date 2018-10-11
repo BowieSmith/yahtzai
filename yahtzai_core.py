@@ -86,7 +86,7 @@ class Player:
         self._scores = [-1 for x in range(0,13)]
         self._type = playerType
         self._remainingPlays = [ScoreEnum(x) for x in range(0,13)]
-        self._playerId = time.time()
+        self._playerId = int(time.time() * 1000000)
 
     def total(self):
         # Maps any -1 scores to 0 before totaling

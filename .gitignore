@@ -3,3 +3,6 @@ __pycache__
 
 # vim stuff
 *.swp
+
+# yahztai files
+gamelog
