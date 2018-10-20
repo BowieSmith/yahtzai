@@ -83,4 +83,4 @@ for rnd in range(0,13):
     if (automatePlay == 'n'):
         yahtzai_core.pressEnterToContinue()
     
-yahtzai_core.printWinners(players)
+yahtzai_core.printWinners(players, humanPlayersCount)

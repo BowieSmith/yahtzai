@@ -24,7 +24,7 @@ def ai_engine(player, rnd, turnNumber, dice):
         for x in range(5, 1, -1):
             if (x in diceFreq):
                 dieNum = max(idx for idx, freq in enumerate(diceFreq) if freq == x) + 1
-                if (not yc.ScoreEnum(dieNum - 1) in remaining) and (dieNum <= 4):
+                if (not yc.ScoreEnum(dieNum - 1) in remaining) and (dieNum <= 4) and (turnNumber <= 7):
                     break
                 if ((not yc.ScoreEnum(dieNum - 1) in remaining) and
                    (not yc.ScoreEnum.FOUR_OF_K in remaining) and
@@ -33,7 +33,7 @@ def ai_engine(player, rnd, turnNumber, dice):
                 diceToReroll = []
                 for idx, die in enumerate(diceState):
                     if die != dieNum:
-                        diceToReroll.append(idx)
+                        diceToReroll.append(idx + 1)
                 return ('y', diceToReroll)
 
         if ((sum(flatten) == 4) and (yc.ScoreEnum.LG_STRT in remaining)

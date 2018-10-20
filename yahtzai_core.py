@@ -83,7 +83,7 @@ class Player:
 
     def __init__(self, name, playerType):
         self._name = name
-        self._scores = [-1 for x in range(0,13)]
+        self._scores = [-1 for _ in range(0,13)]
         self._type = playerType
         self._remainingPlays = [ScoreEnum(x) for x in range(0,13)]
         self._playerId = int(time.time() * 1000000)
@@ -291,7 +291,7 @@ def getWinners(players):
             winners.append(player)
     return winners
 
-def printWinners(players):
+def printWinners(players, humanPlayersCount):
     winners = getWinners(players)
     clearScreen()
     print("\nFinal scores:\n")
@@ -303,6 +303,8 @@ def printWinners(players):
             print(f'  - {winner.name()}')
     else:
         print(f'Our winner is... {winners[0].name()}, with a score of {winners[0].total()}!')
+    if humanPlayersCount == 0:
+        print(f'\nThe average score of the AI is... {sum(player.total() for player in players) / len(players)}\n')
     print("\nGoodbye!\n")
 
 def clearScreen():
