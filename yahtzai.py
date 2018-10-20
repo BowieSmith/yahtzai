@@ -58,11 +58,14 @@ else:
         else:
             break
 
-print("\nAll set! Our players are:")
-for p in players:
-    print("  -",p.name())
-print()
-yahtzai_core.pressEnterToContinue()
+if automatePlay == 'n':
+    print("\nAll set! Our players are:")
+    for p in players:
+        print("  -",p.name())
+    print()
+    yahtzai_core.pressEnterToContinue()
+else:
+    print("\nQuiet please. The AI is thinking...\n")
 
 dice = yahtzai_core.Dice()
 
@@ -76,11 +79,10 @@ for rnd in range(0,13):
             if not rollAgain:
                 break
 
-    yahtzai_core.clearScreen()
-    print(f'\nRound {rnd + 1} scores:\n')
-    yahtzai_core.printScorecard(players)
-
-    if (automatePlay == 'n'):
-        yahtzai_core.pressEnterToContinue()
+        if (automatePlay == 'n'):
+            yahtzai_core.clearScreen()
+            print(f'\nRound {rnd + 1} scores:\n')
+            yahtzai_core.printScorecard(players)
+            yahtzai_core.pressEnterToContinue()
     
 yahtzai_core.printWinners(players, humanPlayersCount)

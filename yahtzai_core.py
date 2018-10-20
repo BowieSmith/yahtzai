@@ -188,6 +188,9 @@ def interactiveTurn(player, rnd, turnNumber, dice):
                     try:
                         print("Enter dice to reroll in a space delimited list (Ex. '1 4 5'):")
                         rerollVals = list(map(lambda s : int(s), input("--> ").split()))
+                        for value in rerollVals:
+                            if value < 1 or value > 5:
+                                raise ValueError("Reroll values must be 1, 2, 3, 4, or 5")
                         return ('y', rerollVals)
                     except:
                         print("\nONLY INTEGERS! 1 - 5. (Or press enter to reroll all dice)")
@@ -301,6 +304,7 @@ def printWinners(players, humanPlayersCount):
         print("It's a tie! Out winners are:")
         for winner in winners:
             print(f'  - {winner.name()}')
+        print(f'With a score of {winners[0].total()}')
     else:
         print(f'Our winner is... {winners[0].name()}, with a score of {winners[0].total()}!')
     if humanPlayersCount == 0:
