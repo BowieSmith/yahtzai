@@ -8,29 +8,18 @@ import yahtzai_less_dumb_ai
 import yahtzai_random_ai
 
 
-class Die:
-    """Holds mutable state of 6-sided die"""
-
-    def __init__(self):
-        self._value = random.randint(1,6)
-
-    def roll(self):
-        self._value = random.randint(1,6)
-
-    def val(self):
-        return self._value
-
-
 class Dice:
-    """Holds mutable state of 5 6-sided die"""
+    """Holds state of 5 6-sided die"""
 
     def __init__(self):
-        self._dice = (Die(), Die(), Die(), Die(), Die())
-
+        self._dice = []
+        for i in range(0,5):
+            self._dice.append(random.randint(1,6));
+        self._dice = Dice.normalize(self._dice)
     
     def view(self):
         """Returns state of 5 die as 5-tuple of ints"""
-        return tuple(map(lambda d: d.val(), self._dice))
+        return tuple(self._dice)
 
     def freq(self):
         """Returns 6-tuple with frequency of each dice from current state"""
@@ -44,15 +33,24 @@ class Dice:
            Useful for detecting straights"""
         return tuple(map(lambda i: 1 if i > 0 else 0, self.freq()))
 
-
     def roll(self, *diceNums):
         """With no args, reroll all. Else roll dice nums given in int list
             diceNums is indexed starting at 1 (ex [1,3,5])"""
         if not diceNums:
             diceNums = list(range(0,5))
         for i in diceNums:
-            self._dice[i - 1].roll()
-
+            self._dice[i - 1] = random.randint(1,6);
+        self._dice = Dice.normalize(self._dice)
+    
+    @staticmethod
+    def normalize(dice):
+        """View dice in normalized form"""
+        normalized = []
+        for i in range(1,7):
+            for d in dice:
+                if (d == i):
+                    normalized.append(d)
+        return normalized
 
 
 class ScoreEnum(enum.Enum):
