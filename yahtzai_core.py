@@ -41,6 +41,9 @@ class Dice:
         for i in diceNums:
             self._dice[i - 1] = random.randint(1,6);
         self._dice = Dice.normalize(self._dice)
+
+    def asString(self):
+        return ''.join([str(d) for d in self.view()])
     
     @staticmethod
     def normalize(dice):
@@ -94,6 +97,9 @@ class Player:
 
     def scores(self):
         return tuple(self._scores)
+
+    def playedMovesAsInt(self):
+        return int('0b' + "".join(["1" if i >= 0 else "0" for i in self.scores()]), 2)
 
     def name(self):
         return self._name
