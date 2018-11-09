@@ -11,11 +11,14 @@ import yahtzai_random_ai
 class Dice:
     """Holds state of 5 6-sided die"""
 
-    def __init__(self):
-        self._dice = []
-        for i in range(0,5):
-            self._dice.append(random.randint(1,6));
-        self._dice = Dice.normalize(self._dice)
+    def __init__(self, diceString=''):
+        if (len(diceString) != 5):
+            diceList = []
+            for i in range(0,5):
+                diceList.append(random.randint(1,6))
+        else:
+            diceList = [int(i) for i in list(diceString)]
+        self._dice = Dice.normalize(diceList)
     
     def view(self):
         """Returns state of 5 die as 5-tuple of ints"""
@@ -98,8 +101,8 @@ class Player:
     def scores(self):
         return tuple(self._scores)
 
-    def playedMovesAsInt(self):
-        return int('0b' + "".join(["1" if i >= 0 else "0" for i in self.scores()]), 2)
+    def playedMovesBitString(self):
+        return "".join(["1" if i >= 0 else "0" for i in self.scores()])
 
     def name(self):
         return self._name
@@ -153,27 +156,37 @@ def validateScore(scoreEnum, dice):
             
 
 
+def getScoreGivenDice(scoreEnum, dice):
+    """
+    Given scoreEnum and dice, return score value when dice applied to scoreEnum
+    """
+
+    if not validateScore(scoreEnum, dice):
+        return 0
+    else:
+        if scoreEnum.value in range(0,6):
+            return sum(map(lambda x : x if x == (scoreEnum.value + 1) else 0, dice.view()))
+        elif scoreEnum.name == 'FULL_H':
+            return 25
+        elif scoreEnum.name == 'SM_STRT':
+            return 30
+        elif scoreEnum.name == 'LG_STRT':
+            return 40
+        elif scoreEnum.name == 'YAHTZEE':
+            return 50
+        else:
+            return sum(dice.view())
+
+
+
 def applyScore(player, scoreEnum, dice):
     """
     Given player, scoreEnum, and dice, assigns score to player
     """
 
-    if not validateScore(scoreEnum, dice):
-        player.setScore(scoreEnum, 0)
-    else:
-        if scoreEnum.value in range(0,6):
-            player.setScore(scoreEnum, sum(map(lambda x : x if x == (scoreEnum.value + 1) else 0, dice.view())))
-        elif scoreEnum.name == 'FULL_H':
-            player.setScore(scoreEnum, 25)
-        elif scoreEnum.name == 'SM_STRT':
-            player.setScore(scoreEnum, 30)
-        elif scoreEnum.name == 'LG_STRT':
-            player.setScore(scoreEnum, 40)
-        elif scoreEnum.name == 'YAHTZEE':
-            player.setScore(scoreEnum, 50)
-        else:
-            player.setScore(scoreEnum, sum(dice.view()))
+    player.setScore(scoreEnum, getScoreGivenDice(scoreEnum, dice))
     player.removeFromRemaining(scoreEnum)
+
 
 
 def interactiveTurn(player, rnd, turnNumber, dice):
