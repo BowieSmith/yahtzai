@@ -85,16 +85,20 @@ class Player:
     Also holds set of "remaining plays".
     """
 
-    def __init__(self, name, playerType):
+    # playerType is used to control gameplay. "human" for interactive play.
+    #   "aiTypeName" for given AI type. See documentation in yahtzai.py
+    # gameSize controls size of game. 13 rounds for standard yahtzee game.
+    #   Can choose 6 for "small" game, using only 1s,2s,3s,4s,5s,6s as scoring options.
+    def __init__(self, name, playerType, gameSize=13):
         self._name = name
-        self._scores = [-1 for _ in range(0,13)]
+        self._scores = [-1 for _ in range(0,gameSize)]
         self._type = playerType
-        self._remainingPlays = [ScoreEnum(x) for x in range(0,13)]
+        self._remainingPlays = [ScoreEnum(x) for x in range(0,gameSize)]
         self._playerId = int(time.time() * 1000000)
 
     def total(self):
         # Maps any -1 scores to 0 before totaling
-        s = list(map(lambda x: 0 if x < 0 else x, self._scores))
+        s = [0 if x < 0 else x for x in self._scores]
         # Returns sum of map. Includes 35 bonus calculation if upper section >= 63
         return (sum(s) if sum(s[0:6]) < 63 else sum(s) + 35)
 
@@ -233,7 +237,7 @@ def interactiveTurn(player, rnd, turnNumber, dice):
                 scoreKey = int(input("--> "))
             return ('n', ScoreEnum(scoreKey))
         except:
-            print("\nEnter an INTEGER! 0 - 12.")
+            print(f'\nEnter an INTEGER! 0 - {len(player.scores())}.')
 
 
 
@@ -288,7 +292,7 @@ def printScorecard(players):
     for name in playerNames:
         print(f'{name:12} ', end='')
     print('\n')
-    for scoreEnum in ScoreEnum:
+    for scoreEnum in (ScoreEnum(i) for i in range(0, len(players[0].scores()))):
         print(f'({scoreEnum.value:2}) {scoreEnum.name:10}  :  ', end='')
         for player in players:
             scoreVal = player.scores()[scoreEnum.value] if player.scores()[scoreEnum.value] >= 0 else "__"

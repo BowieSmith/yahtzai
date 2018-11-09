@@ -28,6 +28,10 @@ def evaluateAction(diceString, action):
 def scoreAction(playedMovesBitString, prevDiceString, action, nextDiceString):
 
 def scoreFunction(diceString, scoreEnum):
+    bonusBias = 1.666666        # to boost top scores to reflect bonus
+    fourOfKindBias = 10         # to boost fourOfKind over threeOfKind (since 4k is valid 3k)
+    dice = yc.Dice(diceString)
     if (scoreEnum.value < 6):
-        return yc.getScoreGivenDice(scoreEnum, yc.Dice(diceString)) + (1.666666 * scoreEnum.value)
-
+        return yc.getScoreGivenDice(scoreEnum, dice) + (bonusBias * scoreEnum.value)
+    if (scoreEnum == yc.ScoreEnum.FOUR_OF_K):
+        return yc.getScoreGivenDice(scoreEnum, dice) + fourOfKindBias

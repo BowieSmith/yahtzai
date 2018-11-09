@@ -35,17 +35,33 @@ while True:
         print("Enter an INTEGER!\n")
 print()
 
+while True:
+    try:
+        print("How many rounds? (Pressing enter gives a standard 13-round yahtzee game)");
+        totalRounds = input("--> ")
+        if (totalRounds == ""):
+            totalRounds = 13
+        else:
+            totalRounds = int(totalRounds)
+            if (totalRounds < 2 or totalRounds > 13):
+                print("Enter an integer between 1 and 13!")
+                continue
+        break
+    except ValueError:
+        print("Enter an INTEGER!\n")
+print()
+
 players = []
 
 for p in range(0, humanPlayersCount):
     print(f'Player {p + 1} name:')
     name = input("--> ")
-    players.append(yahtzai_core.Player(name, 'human'))
+    players.append(yahtzai_core.Player(name, 'human', gameSize=totalRounds))
     print()
 
 # The second argument to Player constructor determines which AI Engine to use
 for p in range(1, aiPlayersCount + 1):
-    players.append(yahtzai_core.Player(f'AI Player {p}', 'ai-less-dumb'))
+    players.append(yahtzai_core.Player(f'AI Player {p}', 'ai-less-dumb', gameSize=totalRounds))
 
 if humanPlayersCount != 0:
     automatePlay = 'n'
@@ -71,7 +87,7 @@ dice = yahtzai_core.Dice()
 
 # Main game loop
 # 13 rounds. Each play gets up to three rolls each round.
-for rnd in range(0,13):
+for rnd in range(0, len(players[0].scores())):
     for player in players:
         dice.roll()
         for turnNo in range(0,3):
