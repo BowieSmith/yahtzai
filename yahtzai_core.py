@@ -6,6 +6,7 @@ import time
 import yahtzai_dumb_ai
 import yahtzai_less_dumb_ai
 import yahtzai_random_ai
+import yahtzai_rl_ai
 
 
 class Dice:
@@ -241,7 +242,7 @@ def interactiveTurn(player, rnd, turnNumber, dice):
 
 
 
-def turn(player, rnd, turnNumber, dice):
+def turn(player, rnd, turnNumber, dice, actionTable, gameSize):
     """
     Delegates logic of each turn to other functions based on player type.
     Humans given interactive path. AIs directed to AI automated path.
@@ -258,6 +259,8 @@ def turn(player, rnd, turnNumber, dice):
         decision = yahtzai_less_dumb_ai.ai_engine(player, rnd, turnNumber, dice)
     elif player.type() == 'ai-random':
         decision = yahtzai_random_ai.ai_engine(player, rnd, turnNumber, dice)
+    elif player.type() == 'ai-rl':
+        decision = yahtzai_rl_ai.ai_engine(player, rnd, turnNumber, dice, actionTable, gameSize)
 
     # LOG GAME PLAY -- comma separated values for each turn, newline separating turns
     # LOG SYNTAX:  playerName, type, id, scores, roundNumber, turnNumber, dice, decision, returnVal
