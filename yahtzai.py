@@ -1,6 +1,8 @@
-import yahtzai_core
+import yahtzai_core as yc
+import yahtzai_rl_ai as rl
+import sys
 
-yahtzai_core.clearScreen()
+yc.clearScreen()
 
 print('''
   ___    ___ ________  ___  ___  _________  ________  ________  ___     
@@ -14,9 +16,9 @@ print('''
 ''')
 
 print("\n" * 20)
-yahtzai_core.pressEnterToContinue()
+yc.pressEnterToContinue()
                                                                         
-yahtzai_core.clearScreen()
+yc.clearScreen()
 while True:
     try:
         print("How many human players?");
@@ -34,6 +36,22 @@ while True:
     except ValueError:
         print("Enter an INTEGER!\n")
 print()
+
+if (aiPlayersCount > 0):
+    while True:
+        try:
+            print("Choose an AI (enter integer):")
+            print(" (1) Random AI (easy)")
+            print(" (2) Expert System AI (medium)")
+            print(" (3) Reinforcement Learning AI (hard)")
+            aiNumber = int(input("--> "))
+            if (aiNumber < 1 or aiNumber > 3):
+                print("Enter an integer between 1 and 3!")
+                continue
+            aiType = 'ai-random' if aiNumber == 1 else 'ai-less-dumb' if aiNumber == 2 else 'ai-rl'
+            break
+        except ValueError:
+            print("Enter an INTEGER!\n")
 
 while True:
     try:
@@ -56,12 +74,20 @@ players = []
 for p in range(0, humanPlayersCount):
     print(f'Player {p + 1} name:')
     name = input("--> ")
-    players.append(yahtzai_core.Player(name, 'human', gameSize=totalRounds))
+    players.append(yc.Player(name, 'human', gameSize=totalRounds))
     print()
 
 # The second argument to Player constructor determines which AI Engine to use
+actionTable = {}
+if (aiType == 'ai-rl'):
+    try:
+        actionTable = rl.loadActionTable('at' + str(totalRounds) + '.p')
+    except Exception:
+        print(f'Action table "at{str(totalRounds)}.p" does not exist')
+        sys.exit()
+
 for p in range(1, aiPlayersCount + 1):
-    players.append(yahtzai_core.Player(f'AI Player {p}', 'ai-less-dumb', gameSize=totalRounds))
+    players.append(yc.Player(f'AI Player {p}', aiType, gameSize=totalRounds))
 
 if humanPlayersCount != 0:
     automatePlay = 'n'
@@ -79,11 +105,11 @@ if automatePlay == 'n':
     for p in players:
         print("  -",p.name())
     print()
-    yahtzai_core.pressEnterToContinue()
+    yc.pressEnterToContinue()
 else:
     print("\nQuiet please. The AI is thinking...\n")
 
-dice = yahtzai_core.Dice()
+dice = yc.Dice()
 
 # Main game loop
 # 13 rounds. Each play gets up to three rolls each round.
@@ -91,14 +117,14 @@ for rnd in range(0, len(players[0].scores())):
     for player in players:
         dice.roll()
         for turnNo in range(0,3):
-            rollAgain = yahtzai_core.turn(player, rnd, turnNo, dice)
+            rollAgain = yc.turn(player, rnd, turnNo, dice, actionTable, totalRounds)
             if not rollAgain:
                 break
 
         if (automatePlay == 'n'):
-            yahtzai_core.clearScreen()
+            yc.clearScreen()
             print(f'\nRound {rnd + 1} scores:\n')
-            yahtzai_core.printScorecard(players)
-            yahtzai_core.pressEnterToContinue()
+            yc.printScorecard(players)
+            yc.pressEnterToContinue()
     
-yahtzai_core.printWinners(players, humanPlayersCount)
+yc.printWinners(players, humanPlayersCount)
