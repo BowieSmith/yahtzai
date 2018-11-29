@@ -52,6 +52,7 @@ if (aiPlayersCount > 0):
             break
         except ValueError:
             print("Enter an INTEGER!\n")
+    print()
 
 while True:
     try:
@@ -80,11 +81,18 @@ for p in range(0, humanPlayersCount):
 # The second argument to Player constructor determines which AI Engine to use
 actionTable = {}
 if (aiPlayersCount > 0 and aiType == 'ai-rl'):
-    try:
-        actionTable = rl.loadActionTable('at' + str(totalRounds) + '.p')
-    except Exception:
-        print(f'Action table "at{str(totalRounds)}.p" does not exist')
-        sys.exit()
+    if ('-a' in sys.argv):
+        try:
+            actionTable = rl.loadActionTable(sys.argv.index('-a') + 1)
+        except Exception:
+            print(f'Action table {sys.argv.index('-a') + 1} does not exist')
+            sys.exit()
+    else:
+        try:
+            actionTable = rl.loadActionTable('at' + str(totalRounds) + '.p')
+        except Exception:
+            print(f'Action table "at{str(totalRounds)}.p" does not exist')
+            sys.exit()
 
 for p in range(1, aiPlayersCount + 1):
     players.append(yc.Player(f'AI Player {p}', aiType, gameSize=totalRounds))
@@ -112,7 +120,7 @@ else:
 dice = yc.Dice()
 
 # Main game loop
-# 13 rounds. Each play gets up to three rolls each round.
+# Number rounds chosen by player. Each play gets up to three rolls each round.
 for rnd in range(0, len(players[0].scores())):
     for player in players:
         dice.roll()

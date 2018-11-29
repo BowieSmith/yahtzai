@@ -194,6 +194,7 @@ def applyScore(player, scoreEnum, dice):
 
 
 
+# Turn Path for human players (requiring terminal I/O)
 def interactiveTurn(player, rnd, turnNumber, dice):
     turnNumberString = "First" if turnNumber == 0 else "Second" if turnNumber == 1 else "Third"
     clearScreen()
@@ -309,6 +310,7 @@ def printScorecard(players):
     print()
 
 
+# Calculate winners (may be multiple in list if tie)
 def getWinners(players):
     winners = [players[0]]
     for player in players[1:]:
