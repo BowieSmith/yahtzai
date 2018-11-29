@@ -6,3 +6,12 @@ __pycache__
 
 # yahztai files
 gamelog
+
+# java tests
+*.java
+
+# pickle files
+*.p
+
+# cloned git repos
+combinatoricslib3/

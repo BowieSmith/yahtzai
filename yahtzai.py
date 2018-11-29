@@ -79,7 +79,7 @@ for p in range(0, humanPlayersCount):
 
 # The second argument to Player constructor determines which AI Engine to use
 actionTable = {}
-if (aiType == 'ai-rl'):
+if (aiPlayersCount > 0 and aiType == 'ai-rl'):
     try:
         actionTable = rl.loadActionTable('at' + str(totalRounds) + '.p')
     except Exception:

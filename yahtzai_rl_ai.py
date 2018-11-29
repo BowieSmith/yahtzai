@@ -52,8 +52,6 @@ def scoreFunction(diceString, scoreEnum):
     dice = yc.Dice(diceString)
     if (scoreEnum.value < 6):
         return yc.getScoreGivenDice(scoreEnum, dice) + (bonusBias * (scoreEnum.value + 1))
-    if (scoreEnum == yc.ScoreEnum.FOUR_OF_K):
-        return yc.getScoreGivenDice(scoreEnum, dice) + fourOfKindBias
     if (scoreEnum == yc.ScoreEnum.CHANCE):
         return yc.getScoreGivenDice(scoreEnum, dice) + chanceBias
     return yc.getScoreGivenDice(scoreEnum, dice)
