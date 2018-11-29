@@ -83,9 +83,9 @@ actionTable = {}
 if (aiPlayersCount > 0 and aiType == 'ai-rl'):
     if ('-a' in sys.argv):
         try:
-            actionTable = rl.loadActionTable(sys.argv.index('-a') + 1)
+            actionTable = rl.loadActionTable(sys.argv[sys.argv.index('-a') + 1])
         except Exception:
-            print(f"Action table {sys.argv.index('-a') + 1} does not exist")
+            print(f"Action table \'{sys.argv[sys.argv.index('-a') + 1]}\' does not exist")
             sys.exit()
     else:
         try:

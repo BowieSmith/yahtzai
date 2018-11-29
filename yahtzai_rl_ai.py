@@ -3,12 +3,15 @@ import itertools
 import random
 import pickle
 
+# Reinforcement Learning AI interface
 def ai_engine(player, rnd, turnNumber, dice, actionTable, gameSize):
+    # Choose re-roll action if both re-rolls have not been used
     if (turnNumber < 2):
         action = pickAction(actionTable,
                 playedMovesBitStringToInt(player.playedMovesBitString()), dice.asString())
         return ('y', actionIntToRerollList(action))
 
+    # Choose best action if both re-rolls have been used
     scoreValues = [scoreFunction(dice.asString(), yc.ScoreEnum(i)) for i in range(0, gameSize)]
     for idx,val in enumerate(player.playedMovesBitString()):
         if val == '1':
@@ -16,21 +19,26 @@ def ai_engine(player, rnd, turnNumber, dice, actionTable, gameSize):
     maxScoreValueIndex = scoreValues.index(max(scoreValues))
     return ('n', yc.ScoreEnum(maxScoreValueIndex))
 
+# Build out initial action table for given game size
 def initializeActionTable(gameSize):
     actionDict = {}
-    for playedMoves in range(0, 2 ** gameSize):
+    for playedMoves in range(0, (2 ** gameSize) - 1):
         for diceCombination in itertools.combinations_with_replacement("123456", 5):
             for action in range(0, 2**5):
                 actionDict[(playedMoves, ''.join(diceCombination), action)] = (0,0,0)
     return actionDict
 
+# Given decimal action integer, return list of dice indices to re-roll
 def actionIntToRerollList(action):
     diceToReroll = []
+    # enumerate decimale action integer as binary number
     for idx,val in enumerate(list(bin(action)[2:].zfill(5))):
+        # for given actions "1", add index to re-roll list
         if (val == '1'):
             diceToReroll.append(idx + 1)
     return diceToReroll
     
+# given dicestring and action, return dice state after action (stochastic event)
 def diceAfterAction(diceString, action):
     dice = yc.Dice(diceString)
     diceToReroll = actionIntToRerollList(action)
@@ -38,6 +46,7 @@ def diceAfterAction(diceString, action):
         dice.roll(*diceToReroll)
     return dice.asString()
 
+# given game state, score transition from prev dice state to new dice state
 def scoreAction(playedMovesBitString, prevDiceString, nextDiceString):
     maxPrevScore = 0
     maxNextScore = 0
@@ -46,6 +55,7 @@ def scoreAction(playedMovesBitString, prevDiceString, nextDiceString):
         maxNextScore = max(maxNextScore, -10 if played == '1' else scoreFunction(nextDiceString, yc.ScoreEnum(idx)))
     return maxNextScore - maxPrevScore
 
+# given dice string and desired score, given resulting score
 def scoreFunction(diceString, scoreEnum):
     bonusBias = 1.666666        # boost top scores to reflect bonus
     chanceBias = -10            # reduce appeal of chance (save for no other options)
@@ -100,3 +110,9 @@ def saveActionTable(actionTable, name):
 def loadActionTable(name):
     with open(name, 'rb') as pfile:
         return pickle.load(pfile)
+
+def sumTotalGames(actionTable):
+    sum = 0
+    for key,value in actionTable.items():
+        sum += value[1]
+    return sum

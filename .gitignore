@@ -15,3 +15,6 @@ gamelog
 
 # cloned git repos
 combinatoricslib3/
+
+# mac numbers files (mac version of excel)
+*.numbers
