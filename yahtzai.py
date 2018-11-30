@@ -2,6 +2,14 @@ import yahtzai_core as yc
 import yahtzai_rl_ai as rl
 import sys
 
+"""
+This script implements the main game loop. It is the entry point for the game.
+Usage: python3 yahtzai.py [-a "actionTable]
+
+This script also collects user information for starting the game. How many
+rounds, how many players, type of AI, and automation.
+"""
+
 yc.clearScreen()
 
 print('''
