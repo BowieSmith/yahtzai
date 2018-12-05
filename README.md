@@ -27,7 +27,7 @@ game will exit.
 The following list gives the AI implementation and the module where they can be found:
 - yahtzai\_less\_dumb\_ai.py    Expert System
 - yahtzai\_rl\_ai.py            Reinforcement Learning
-- yahtzai\_random\_ai.py        Not an AI, just a baseline
+- yahtzai\_random\_ai.py        Not an AI, just a baseline that plays random moves
 - yahtzai\_dumb\_ai.py          Not an AI, just specification of AI interface
 
 ## Training

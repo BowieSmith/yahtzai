@@ -1,6 +1,8 @@
 import yahtzai_core as yc
 import random
 
+# Random AI. Makes random VALID moves through AI interface. Used as baseline.
+
 def ai_engine(player, rnd, turnNumber, dice):
     # roll again. Choose dice to reroll at random
     if random.randint(1,2) == 1 and turnNumber < 2:

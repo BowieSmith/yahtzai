@@ -20,6 +20,7 @@ def ai_engine(player, rnd, turnNumber, dice, actionTable, gameSize):
     return ('n', yc.ScoreEnum(maxScoreValueIndex))
 
 # Build out initial action table for given game size
+# This is similar to a set of Q-values
 def initializeActionTable(gameSize):
     actionDict = {}
     for playedMoves in range(0, (2 ** gameSize) - 1):
@@ -39,6 +40,7 @@ def actionIntToRerollList(action):
     return diceToReroll
     
 # given dicestring and action, return dice state after action (stochastic event)
+# This is our delta function. Given a dice string and action, it returns the next state.
 def diceAfterAction(diceString, action):
     dice = yc.Dice(diceString)
     diceToReroll = actionIntToRerollList(action)
@@ -47,6 +49,7 @@ def diceAfterAction(diceString, action):
     return dice.asString()
 
 # given game state, score transition from prev dice state to new dice state
+# This is our reward function.
 def scoreAction(playedMovesBitString, prevDiceString, nextDiceString):
     maxPrevScore = 0
     maxNextScore = 0
@@ -56,6 +59,7 @@ def scoreAction(playedMovesBitString, prevDiceString, nextDiceString):
     return maxNextScore - maxPrevScore
 
 # given dice string and desired score, given resulting score
+# Helper function to reward function.
 def scoreFunction(diceString, scoreEnum):
     bonusBias = 1.666666        # boost top scores to reflect bonus
     chanceBias = -10            # reduce appeal of chance (save for no other options)
@@ -72,6 +76,8 @@ def playedMovesIntToBitString(playedMovesInt, gameSize):
 def playedMovesBitStringToInt(playedMovesBitString):
     return int('0b' + playedMovesBitString, 2)
 
+# Given an action table, the state of the game, and an action, this performs a
+# trial and updates the action table(Q-values) with the results.
 def trial(actionTable, playedMoves, diceString, action, gameSize):
     prevDiceString = diceString
     nextDiceString = diceAfterAction(prevDiceString, action)
@@ -82,6 +88,7 @@ def trial(actionTable, playedMoves, diceString, action, gameSize):
     newAvg = newSum / newTotalGames
     actionTable[(playedMoves, diceString, action)] = (newSum, newTotalGames, newAvg)
 
+# This wraps the trial function to perform random trials.
 def randomTrial(actionTable, gameSize):
     randomPlayedMoves = random.randint(0, 2**gameSize - 1)
     randomAction = random.randint(0, 2**5 - 1)
@@ -89,6 +96,8 @@ def randomTrial(actionTable, gameSize):
     trial(actionTable, randomPlayedMoves, randomDiceString, randomAction, gameSize)
     return (randomPlayedMoves, randomDiceString, randomAction)
 
+# Our policy function. Given an action table and a game state, it returns the best action.
+# Loops through all 32 possible actions, finding the one with the highest expected reward.
 def pickAction(actionTable, playedMoves, diceString):
     maxAvg = -100
     bestAction = 0
@@ -99,18 +108,22 @@ def pickAction(actionTable, playedMoves, diceString):
             bestAction = action
     return bestAction
 
+# Trains given action table with given number of trials
 def trainActionTable(actionTable, gameSize, numberTrials):
     for _ in range(0, numberTrials):
         randomTrial(actionTable, gameSize)
 
+# Saves action table to disk with given name (as a pickle file)
 def saveActionTable(actionTable, name):
     with open(name, 'wb') as pfile:
         pickle.dump(actionTable, pfile)
 
+# Loads action table from disk by depickling given file name
 def loadActionTable(name):
     with open(name, 'rb') as pfile:
         return pickle.load(pfile)
 
+# Helper function to count total trials in given action table
 def sumTotalGames(actionTable):
     sum = 0
     for key,value in actionTable.items():

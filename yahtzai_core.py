@@ -81,7 +81,7 @@ class ScoreEnum(enum.Enum):
 class Player:
     """
     Holds player name and list of scores
-    All 13 scores initialized with value -1 to indicate not yet used
+    All scores initialized with value -1 to indicate not yet used
     Score order: [1s, 2s, 3s, 4s, 5s, 6s, 3k, 4k, fh, ss, ls, y, ch]
     Also holds set of "remaining plays".
     """
