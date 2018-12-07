@@ -23,7 +23,7 @@ def ai_engine(player, rnd, turnNumber, dice, actionTable, gameSize):
 # This is similar to a set of Q-values
 def initializeActionTable(gameSize):
     actionDict = {}
-    for playedMoves in range(0, (2 ** gameSize) - 1):
+    for playedMoves in range(0, (2 ** gameSize)):
         for diceCombination in itertools.combinations_with_replacement("123456", 5):
             for action in range(0, 2**5):
                 actionDict[(playedMoves, ''.join(diceCombination), action)] = (0,0,0)
