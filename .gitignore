@@ -21,3 +21,7 @@ combinatoricslib3/
 
 # pdf
 *.pdf
+
+# zip stuff
+*.zip
+yahtzai_zip/
