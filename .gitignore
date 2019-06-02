@@ -21,6 +21,7 @@ combinatoricslib3/
 
 # pdf
 *.pdf
+!yahtzai_ai_report.pdf
 
 # zip stuff
 *.zip
